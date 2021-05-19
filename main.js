@@ -1,11 +1,7 @@
 import express from "express";
 import morgan from "morgan";
-import { graphqlHTTP } from "express-graphql";
-import schema from "./graphql-schema.js";
-import commentService from "./services/commentService.js";
-import productService from "./services/productService.js";
-
 import "./db.js";
+import graphql from "./graphql/graphql.js";
 
 const PORT = process.env.PORT || 4000;
 
@@ -13,29 +9,8 @@ const app = express();
 
 app.use(morgan("dev"));
 
-const rootValue = {
-  products: () => {},
-  product: () => {},
-  /**
-   *
-   * @param param {{productId: Number!, title: String!, body: String, stars: Number!}}
-   */
-  createProduct: param => productService.createProduct(param.createProductInput),
-  /**
-   *
-   * @param param {{productId: Number!, title: String!, body: String, stars: Number!}}
-   */
-  createComment: param => commentService.createComment(param),
-};
 
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    schema,
-    rootValue,
-    graphiql: true,
-  })
-);
+app.use("/graphql", graphql(true));
 
 app.use((req, res, next) => {
   const error = {
