@@ -1,0 +1,40 @@
+query {
+  products(
+    filter: {
+      categories: [STYLE, FOOD],
+      minStars: 0,
+      minPrice: 0,
+      maxPrice: 100
+    },
+    sort: {
+      value: createdAt,
+      order: desc
+    }
+  ) {
+    _id
+    name
+    createdAt
+    description
+    price
+    comments {
+      _id
+    }
+    category
+    stars
+  }
+}
+
+query {
+  product(id: "60a444d3d78a386893347d56") {
+ _id
+    name
+    createdAt
+    description
+    price
+    comments {
+      _id
+    }
+    category
+    stars
+  }
+}

@@ -1,0 +1,28 @@
+mutation {
+  createProduct(createProductInput: {name:"ciao", description:"ciao", price: 1.0, category:STYLE}) {
+    _id
+  name
+  createdAt
+  description
+  price
+  comments {
+     _id,
+      title,
+      body,
+      stars,
+      date
+  }
+  category
+  stars
+  }
+}
+
+mutation {
+  createComment(productId:1, createCommentInput:{title: "ciao", stars: 1}) {
+      _id,
+      title,
+      body,
+      stars,
+      date
+  }
+}

@@ -21,8 +21,22 @@ const productSchema = new mongoose1.Schema({
     enum: ["STYLE", "FOOD", "TECH", "SPORT"],
     message: "{VALUE} is not supported",
   },
-  stars: Number,
+  stars: {
+    type: Number,
+    default: 0
+  },
+  starsSum: {
+    type: Number,
+    default: 0,
+  },
+  commentsNumber: Number
+}, {
+  toJSON: {
+    virtuals: true
+  }
 });
+
+productSchema.virtual()
 
 const Product = mongoose1.model("Product", productSchema);
 
