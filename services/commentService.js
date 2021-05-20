@@ -1,15 +1,25 @@
 import Product from "../models/product.js";
-import { Comment } from "../models/comment.js";
+import Comment from "../models/comment.js";
 
 import { promisify } from "util";
 
-const createComment = async ({ productId, ...commentParams }, selection) => {
-  const comment = new Comment({ ...commentParams });
-  const promisifiedUpdateOne = promisify(Product.updateOne.bind(Product));
-  return await promisifiedUpdateOne(
+const createComment = (productId, { title, body, stars }, projection) => {
+  const comment = new Comment({ title, body, stars });
+  const updateProduct = promisify(Product.updateOne.bind(Product));
+
+  return updateProduct(
     { _id: productId },
-    { $push: { "$.comments": comment }, projection: selection }
-  );
+    {
+      $push: { comments: comment },
+      $inc: {
+        starsSum: stars,
+        commentsNumber: 1,
+      },
+      projection: projection,
+    }
+  )
+    .then(() => comment)
+    .catch(() => throw new Error("Failed to create a new comment"));
 };
 
 export default { createComment };

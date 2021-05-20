@@ -18,7 +18,7 @@ mutation {
 }
 
 mutation {
-  createComment(productId:1, createCommentInput:{title: "ciao", stars: 1}) {
+  createComment(productId:"60a6cfda59e1ae6c4bd5b565", createCommentInput:{title: "ciao", stars: 1}) {
       _id,
       title,
       body,
