@@ -1,6 +1,4 @@
-import { buildSchema } from "graphql";
-
-const schema = buildSchema(`
+const typeDefs = `
   scalar DateTime,
   enum ProductCategory {
       STYLE
@@ -65,6 +63,6 @@ const schema = buildSchema(`
           productId: ID!
       ) : Comment
   }
-`);
+`;
 
-export default schema;
+export default typeDefs;

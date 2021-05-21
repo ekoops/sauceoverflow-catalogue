@@ -26,7 +26,7 @@ query {
 
 query {
   product(id: "60a444d3d78a386893347d56") {
- _id
+    _id
     name
     createdAt
     description

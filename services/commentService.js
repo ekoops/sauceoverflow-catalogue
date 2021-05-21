@@ -15,11 +15,24 @@ const createComment = (productId, { title, body, stars }, projection) => {
         starsSum: stars,
         commentsNumber: 1,
       },
-      projection: projection,
+      projection,
     }
   )
     .then(() => comment)
-    .catch(() => throw new Error("Failed to create a new comment"));
+    .catch(() => {
+      throw new Error("Failed to create a new comment");
+    });
 };
 
-export default { createComment };
+const getCommentsByProductId = (productId, last, projection) => {
+  const pipeline = [
+    { $match: { _id: productId } },
+    { $unwind: "$comments" },
+    { $project: projection },
+    { $sort: { createdAt: -1 } },
+  ];
+  if (last) pipeline.push({ $limit: last });
+  return Product.aggregate(pipeline);
+};
+
+export default { createComment, getCommentsByProductId };
