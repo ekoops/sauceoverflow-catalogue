@@ -8,13 +8,18 @@ const createProduct = ({ name, description, price, category }) => {
     description,
     price,
     category,
-  }).catch(() => throw new Error("Failed to create a product"));
+  }).catch(() => {
+    throw new Error("Failed to create a product");
+  });
 };
 
 const getProductById = (productId, projection) => {
   const findProductById = promisify(Product.findById.bind(Product));
-  return findProductById(productId, projection).catch(
-    () => throw new Error(`Failed to get the product(${productId})`)
+
+  return findProductById(productId, { ...projection, comments: 0 }).catch(
+    () => {
+      throw new Error(`Failed to get the product(${productId})`);
+    }
   );
 };
 
@@ -32,9 +37,9 @@ const getProducts = ({ clientFilter, clientSort }, projection) => {
   }
   if (clientSort) o.sort = { [clientSort.value]: clientSort.order };
 
-  return getProducts(f, projection, o).catch(
-    () => throw new Error("Failed to get products")
-  );
+  return getProducts(f, { ...projection, comments: 0 }, o).catch(() => {
+    throw new Error("Failed to get products");
+  });
 };
 
 export default { createProduct, getProductById, getProducts };
