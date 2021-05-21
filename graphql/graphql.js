@@ -27,7 +27,7 @@ const getFields = (selectionSet, obj) => {
   });
 };
 
-const getSelection = (info) => {
+const getProjection = (info) => {
   const selectionSets = info.fieldNodes.map((x) => x.selectionSet);
   const selectionObj = {};
   selectionSets.forEach((selectionSet) =>
@@ -44,23 +44,17 @@ const graphql = (enableGraphiQL) => {
           clientFilter: args.filter,
           clientSort: args.sort,
         },
-        getSelection(info)
+        getProjection(info)
       ),
     product: (args, ctx, info) => productService.getProductById(
       args.id,
-      getSelection(info)
+      getProjection(info)
     ),
     /**
      *
      * @param args
-     * @param ctx
-     * @param info
      */
-    createProduct: (args, ctx, info) =>
-      productService.createProduct(
-        args.createProductInput,
-        getSelection(info)
-      ),
+    createProduct: args => productService.createProduct(args.createProductInput),
     /**
      *
      * @param args
@@ -68,8 +62,9 @@ const graphql = (enableGraphiQL) => {
      * @param info
      */
     createComment: (args, ctx, info) => commentService.createComment(
-      args,
-      getSelection(info)
+      args.productId,
+      args.createCommentInput,
+      getProjection(info)
     ),
   };
   return graphqlHTTP({
