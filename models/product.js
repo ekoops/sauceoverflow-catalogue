@@ -36,7 +36,7 @@ const productSchema = new mongoose1.Schema({
   }
 });
 
-productSchema.virtual()
+// productSchema.virtual()
 
 const Product = mongoose1.model("Product", productSchema);
 
