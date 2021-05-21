@@ -3,6 +3,14 @@ import Comment from "../models/comment.js";
 
 import { promisify } from "util";
 
+/**
+ * Creates a comment for a given product and persists it
+ * @param productId
+ * @param title
+ * @param body
+ * @param stars
+ * @returns {*}
+ */
 const createComment = (productId, { title, body, stars }) => {
   const comment = new Comment({ title, body, stars });
   const updateProduct = promisify(Product.updateOne.bind(Product));
@@ -15,16 +23,20 @@ const createComment = (productId, { title, body, stars }) => {
         starsSum: stars,
         commentsNumber: 1,
       }
-
     }
   )
-
     .then(() => comment)
     .catch(err => {
       throw new Error(`Failed to create a new comment: ${err.message}`);
     });
 };
-
+/**
+ * Returns all the comment for a given product id
+ * @param productId {string}
+ * @param last {number}
+ * @param projection {Array<string>}
+ * @returns {Aggregate<Array<any>>}
+ */
 const getCommentsByProductId = (productId, last, projection) => {
     if (last <= 0)  throw new Error(`Last must be positive.`)
     const pipeline = [

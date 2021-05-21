@@ -1,6 +1,14 @@
 import Product from "../models/product.js";
 import { promisify } from "util";
 
+/**
+ * Creates a product and persists it
+ * @param name
+ * @param description
+ * @param price
+ * @param category
+ * @returns {*}
+ */
 const createProduct = ({ name, description, price, category }) => {
   const createProduct = promisify(Product.create.bind(Product));
   return createProduct({
@@ -13,6 +21,12 @@ const createProduct = ({ name, description, price, category }) => {
   });
 };
 
+/**
+ * Returns the product matching the given product id
+ * @param productId
+ * @param projection
+ * @returns {*}
+ */
 const getProductById = (productId, projection) => {
   const findProductById = promisify(Product.findById.bind(Product));
   delete projection.comments;
@@ -26,7 +40,13 @@ const getProductById = (productId, projection) => {
   );
 };
 
-
+/**
+ * Returns all the products matching the filter
+ * @param clientFilter
+ * @param clientSort
+ * @param projection
+ * @returns {*}
+ */
 const getProducts = ({ clientFilter, clientSort }, projection) => {
   const getProducts = promisify(Product.find.bind(Product));
   delete projection.comments;

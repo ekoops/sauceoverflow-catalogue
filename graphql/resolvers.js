@@ -1,6 +1,12 @@
 import productService from "../services/productService.js";
 import commentService from "../services/commentService.js";
 
+/**
+ * Creates an object defining which fields have to be projected
+ * @param info {Object}
+ * @returns  {Object.<string,number>}
+ *
+ */
 const getProjection = (info) => {
   const fieldsArray = info.fieldNodes.flatMap((x) =>
     x.selectionSet.selections.map((y) => y.name.value)
