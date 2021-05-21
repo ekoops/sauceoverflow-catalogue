@@ -40,6 +40,7 @@ const productSchema = new mongoose1.Schema(
 );
 
 productSchema.virtual("stars").get(function () {
+console.log( this, this.commentsNumber)
   return this.commentsNumber > 0 ? this.starsSum / this.commentsNumber : 0;
 });
 

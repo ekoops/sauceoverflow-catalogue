@@ -11,4 +11,5 @@ const mongoose1 = await mongoose.connect("mongodb://localhost:27017/sauceoverflo
 //   console.error(ex);
 //
 // }
+mongoose1.set("runValidators", true)
 export default mongoose1;

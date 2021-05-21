@@ -8,24 +8,28 @@ const createProduct = ({ name, description, price, category }) => {
     description,
     price,
     category,
-  }).catch(() => {
-    throw new Error("Failed to create a product");
+  }).catch(err => {
+    throw new Error(`Failed to create a new product: ${err.message}`);
   });
 };
 
 const getProductById = (productId, projection) => {
   const findProductById = promisify(Product.findById.bind(Product));
-
-  return findProductById(productId, { ...projection, comments: 0 }).catch(
-    () => {
-      throw new Error(`Failed to get the product(${productId})`);
-    }
+  delete projection.comments;
+  if ("stars" in projection) {
+    projection = {...projection , commentsNumber: 1 , starsSum: 1};
+  }
+  return findProductById(productId, projection).catch(
+      err => {
+        throw new Error(`Failed to get the product(${productId}): ${err.message}`);
+      }
   );
 };
 
+
 const getProducts = ({ clientFilter, clientSort }, projection) => {
   const getProducts = promisify(Product.find.bind(Product));
-
+  delete projection.comments;
   const f = {};
   const o = {};
   if (clientFilter) {
@@ -37,8 +41,8 @@ const getProducts = ({ clientFilter, clientSort }, projection) => {
   }
   if (clientSort) o.sort = { [clientSort.value]: clientSort.order };
 
-  return getProducts(f, { ...projection, comments: 0 }, o).catch(() => {
-    throw new Error("Failed to get products");
+  return getProducts(f, projection, o).catch(err => {
+    throw new Error(`Failed to get products: ${err.message}`);
   });
 };
 
