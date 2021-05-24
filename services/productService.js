@@ -31,7 +31,11 @@ const getProductById = (productId, projection) => {
   const findProductById = promisify(Product.findById.bind(Product));
   delete projection.comments;
   if ("stars" in projection) {
-    projection = { ...projection, commentsNumber: 1, starsSum: 1 };
+    projection = {
+      ...projection,
+      commentsNumber: 1,
+      starsSum: 1,
+    };
   }
   return findProductById(productId, projection).catch((err) => {
     throw new Error(`Failed to get the product(${productId}): ${err.message}`);
@@ -46,22 +50,59 @@ const getProductById = (productId, projection) => {
  * @returns {!Promise<!Product[]>}
  */
 const getProducts = ({ clientFilter, clientSort }, projection) => {
-  const getProducts = promisify(Product.find.bind(Product));
+  const pipeline = [];
   delete projection.comments;
-  const f = {};
-  const o = {};
-  if (clientFilter) {
-    if (clientFilter.categories) f.category = { $in: clientFilter.categories };
-    if (clientFilter.minStars) f.stars = { $gte: clientFilter.minStars };
-    if (clientFilter.minPrice) f.price = { $gte: clientFilter.minPrice };
-    if (clientFilter.maxPrice)
-      f.price = { ...f.price, $lte: clientFilter.maxPrice };
+  const project1 = { $project: { comments: 0 } };
+  pipeline.push(project1);
+  if ("stars" in projection) {
+    const addStars = {
+      $addFields: {
+        stars: {
+          $cond: [
+            { $eq: [0, "$commentsNumber"] },
+            0,
+            { $divide: ["$starsSum", "$commentsNumber"] },
+          ],
+        },
+      },
+    };
+    pipeline.push(addStars);
   }
-  if (clientSort) o.sort = { [clientSort.value]: clientSort.order };
+  if (clientFilter && Object.keys(clientFilter).length !== 0) {
+    const match = { $match: {} };
+    if (clientFilter.categories)
+      match.$match.category = { $in: clientFilter.categories };
+    if (clientFilter.minStars)
+      match.$match.stars = { $gte: clientFilter.minStars };
+    if (clientFilter.minPrice)
+      match.$match.price = { $gte: clientFilter.minPrice };
+    if (clientFilter.maxPrice)
+      match.$match.price = {
+        ...match.$match.price,
+        $lte: clientFilter.maxPrice,
+      };
+    pipeline.push(match);
+  }
+  if (clientSort) {
+    const sort = {
+      $sort: { [clientSort.value]: clientSort.order === "asc" ? 1 : -1 },
+    };
+    pipeline.push(sort);
+  }
+  const project2 = { $project: projection };
+  pipeline.push(project2);
 
-  return getProducts(f, projection, o).catch((err) => {
-    throw new Error(`Failed to get products: ${err.message}`);
-  });
+  return Product.aggregate(pipeline)
+    .then((docs) => {
+      console.log(docs);
+      return docs;
+    })
+    .catch((err) => {
+      throw new Error(err);
+    });
 };
 
+
 export default { createProduct, getProductById, getProducts };
+
+
