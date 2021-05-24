@@ -4,14 +4,18 @@ import commentService from "../services/commentService.js";
 /**
  * Creates an object defining which fields have to be projected
  * @param info {Object}
- * @returns  {Object.<string,number>}
+ * @returns  {Object<string,number>}
  *
  */
 const getProjection = (info) => {
   const fieldsArray = info.fieldNodes.flatMap((x) =>
     x.selectionSet.selections.map((y) => y.name.value)
   );
-  return fieldsArray.reduce((acc, cur) => ({ ...acc, [cur]: 1 }), {});
+  let projection = {};
+  fieldsArray.forEach((x) => {
+    projection[x] = 1;
+  });
+  return projection;
 };
 
 const resolvers = {
@@ -30,12 +34,8 @@ const resolvers = {
   Mutation: {
     createProduct: (_, { createProductInput }) =>
       productService.createProduct(createProductInput),
-    createComment: (_, { createCommentInput, productId }, ctx, info) =>
-      commentService.createComment(
-        productId,
-        createCommentInput,
-        getProjection(info)
-      ),
+    createComment: (_, { createCommentInput, productId }) =>
+      commentService.createComment(productId, createCommentInput),
   },
   Product: {
     comments: (product, { last }, ctx, info) =>
