@@ -25,7 +25,7 @@ query {
 }
 
 query {
-  product(id: "60a444d3d78a386893347d56") {
+  product(id: "60ac1af84c035e31b064e411") {
     _id
     name
     createdAt

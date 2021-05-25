@@ -22,7 +22,7 @@ const createComment = (productId, { title, body, stars }) => {
       $inc: {
         starsSum: stars,
         commentsNumber: 1,
-      },
+      }
     }
   )
     .then(() => comment)
