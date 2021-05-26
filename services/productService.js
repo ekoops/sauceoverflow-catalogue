@@ -30,7 +30,7 @@ const createProduct = ({ name, description, price, category }) => {
 const getProductById = (productId, projection) => {
   const findProductById = promisify(Product.findById.bind(Product));
   delete projection.comments;
-  if ('stars' in projection) {
+  if ("stars" in projection) {
     projection = {
       ...projection,
       commentsNumber: 1,
@@ -56,14 +56,14 @@ const getProducts = ({ clientFilter, clientSort }, projection) => {
   pipeline.push(project1);
 
   // If stars is required in projection, we perform the calculation sum/count
-  if ('stars' in projection) {
+  if ("stars" in projection) {
     const addStars = {
       $addFields: {
         stars: {
           $cond: [
-            { $eq: [0, '$commentsNumber'] },
+            { $eq: [0, "$commentsNumber"] },
             0,
-            { $divide: ['$starsSum', '$commentsNumber'] },
+            { $divide: ["$starsSum", "$commentsNumber"] },
           ],
         },
       },
@@ -99,7 +99,7 @@ const getProducts = ({ clientFilter, clientSort }, projection) => {
   // if the client required a sort, let's add it as the last operation in the pipeline
   if (clientSort) {
     const sort = {
-      $sort: { [clientSort.value]: clientSort.order === 'asc' ? 1 : -1 },
+      $sort: { [clientSort.value]: clientSort.order === "asc" ? 1 : -1 },
     };
     pipeline.push(sort);
   }
