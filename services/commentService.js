@@ -38,7 +38,7 @@ const createComment = (productId, { title, body, stars }) => {
  * @returns {!Promise<!Comment[]>}
  */
 const getCommentsByProductId = (productId, last, projection) => {
-  if (last <= 0) throw new Error(`Last must be positive.`);
+  if (last <= 0) throw new Error("Last must be positive.");
   const pipeline = [
     { $match: { _id: productId } },
     { $unwind: "$comments" },
